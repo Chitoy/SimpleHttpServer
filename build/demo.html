@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>个人求职简历</title>
+    <style>
+        body {
+            background: linear-gradient(45deg, #ff6b6b, #ffa69e, #ff9a8b);
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .header {
+            background-color: #333;
+            color: white;
+            text-align: right;
+            padding: 20px;
+        }
+
+        .header img {
+            width: 100px;
+            height: 100px;
+            border: 2px solid white;
+            border-radius: 50%;
+        }
+
+        .content {
+            background-color: #fff;
+            padding: 20px;
+            margin: 20px;
+            box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+
+        p {
+            color: #666;
+            font-size: 18px;
+        }
+
+        .skills {
+            background-color: #ffbe76;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <img src="a.png" alt="a Photo">
+    </div>
+    <div class="content">
+        <h1>个人求职简历</h1>
+        <p><strong>姓名：</strong> 裴元帅</p>
+        <p><strong>年龄：</strong> 27</p>
+        <p><strong>联系方式：</strong> chitoylala@gmail.com</p>
+        <p><strong>地址：</strong> 浙江杭州</p>
+        <h2>个人技能</h2>
+        <ul>
+            <li class="skills">技能1</li>
+            <li class="skills">技能2</li>
+            <li class="skills">技能3</li>
+        </ul>
+        <h2>工作经历</h2>
+        <p><strong>公司1：</strong> 职位1 - 日期1</p>
+        <p><strong>公司2：</strong> 职位2 - 日期2</p>
+        <h2>教育背景</h2>
+        <p><strong>学校1：郑州大学</strong> 专业轨道交通信号与控制 - 日期2019年</p>
+        <!-- 添加一个按钮，用于切换到demo2.html -->
+        <button id="switchToDemo2Button">切换到demo2.html</button>
+    </div>
+    <div class="footer">
+        &copy; 2023 peiyuanshuai
+    </div>
+
+    <!-- 添加以下JavaScript代码 -->
+    <script>
+        // 获取按钮元素
+        var switchToDemo2Button = document.getElementById("switchToDemo2Button");
+
+        // 添加按钮点击事件处理程序
+        switchToDemo2Button.addEventListener("click", function() {
+            // 使用XMLHttpRequest对象发送GET请求到服务器上的demo2.html
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", "http://www.pyszzu.buzz/demo2.html", true); // 请替换为您的服务器域名和路径
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        // 将demo2.html的内容替换当前页面的内容
+                        document.body.innerHTML = xhr.responseText;
+                    } else {
+                        console.error("无法加载demo2.html");
+                    }
+                }
+            };
+            xhr.send();
+        });
+    </script>
+</body>
+</html>

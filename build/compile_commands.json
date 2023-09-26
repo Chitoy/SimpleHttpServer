@@ -1,0 +1,7 @@
+[
+{
+  "directory": "/home/Pys/Cpp/SeverHttp/build",
+  "command": "/usr/bin/g++    -g   -std=gnu++17 -o CMakeFiles/HttpServer.dir/main.cpp.o -c /home/Pys/Cpp/SeverHttp/main.cpp",
+  "file": "/home/Pys/Cpp/SeverHttp/main.cpp"
+}
+]

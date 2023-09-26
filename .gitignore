@@ -1,0 +1,26 @@
+# 忽略以 .png 结尾的文件
+*.png
+
+# 忽略 .cmake 文件
+*.cmake
+
+# 忽略 .bin 文件
+*.bin
+
+# 忽略 .check_cache 文件
+*.check_cache
+
+# 忽略 .o 文件
+*.o
+
+# 忽略 .make 文件
+*.make
+
+# 忽略 .log 文件
+*.log
+
+# 忽略 .out 文件
+*.out
+
+# 忽略路径为 build/CMakeFiles 的文件夹
+build/CMakeFiles/
