@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>赛博朋克风格页面</title>
+    <style>
+        body {
+            background-color: #3a4660; /* 紫色背景 */
+            color: #f3d150; /* 黄色文本 */
+            font-family: "Arial", sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        .header {
+            background-color: #001f3f; /* 蓝色头部背景 */
+            color: #f3d150;
+            text-align: right;
+            padding: 20px;
+        }
+
+        .header img {
+            width: 100px;
+            height: 100px;
+            border: 2px solid #f3d150; /* 黄色边框 */
+            border-radius: 10px;
+        }
+
+        .content {
+            background-color: #0f3460; /* 蓝色内容背景 */
+            padding: 20px;
+            margin: 20px;
+            box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            text-align: left;
+            max-width: 600px;
+        }
+
+        h1 {
+            color: #f3d150;
+            text-align: center;
+        }
+
+        p {
+            color: #f3d150;
+            font-size: 18px;
+        }
+
+        .skills {
+            background-color: #864d27; /* 棕色技能背景 */
+            color: #f3d150;
+            padding: 10px;
+            border-radius: 5px;
+            display: inline-block;
+            margin-right: 5px;
+        }
+
+        .footer {
+            background-color: #001f3f; /* 蓝色页脚背景 */
+            color: #f3d150;
+            text-align: center;
+            padding: 10px;
+        }
+
+        button {
+            background-color: #ff6b6b; /* 红色按钮 */
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* 添加图片样式 */
+        .image {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 100px;
+            height: 100px;
+            border: 2px solid #f3d150; /* 黄色边框 */
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <img src="a.png" alt="a Photo" class="image"> <!-- 添加图片元素 -->
+    </div>
+    <div class="content">
+        <h1>求职简历</h1>
+        <p><strong>姓名：</strong> chitoylala</p>
+        <p><strong>年龄：</strong> 13</p>
+        <p><strong>联系方式：</strong> chitoylala@gmail.com</p>
+        <p><strong>地址：</strong> chitoylala</p>
+        <h2>个人技能</h2>
+        <ul>
+            <li class="skills">技能1</li>
+            <li class="skills">技能2</li>
+            <li class="skills">技能3</li>
+        </ul>
+        <h2>工作经历</h2>
+        <p><strong>公司1：</strong> 职位1 - 日期1</p>
+        <p><strong>公司2：</strong> 职位2 - 日期2</p>
+        <h2>教育背景</h2>
+        <p><strong>学校1：</strong> 职位2 - 日期3</p>
+        <!-- 添加一个按钮，用于切换到demo2.html -->
+        <button id="switchToDemo2Button">赛博朋克</button>
+    </div>
+    <div class="footer">
+        &copy; 2023 chitoylala
+    </div>
+
+    <!-- 添加以下JavaScript代码 -->
+    <script>
+        // 获取按钮元素
+        var switchToDemo2Button = document.getElementById("switchToDemo2Button");
+
+        // 添加按钮点击事件处理程序
+        switchToDemo2Button.addEventListener("click", function() {
+            // 修改浏览器地址栏的URL
+            window.location.href = "http://www.pyszzu.buzz/Second.html"; // 请替换为您的服务器域名和路径
+        });
+    </script>
+</body>
+</html>
