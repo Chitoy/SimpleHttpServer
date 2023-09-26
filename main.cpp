@@ -32,16 +32,24 @@ std::string generateHttpResponse(const std::string &httpRequest)
         std::ostringstream response;
         response << "HTTP/1.1 200 OK\r\n";
         response << "Content-Type: text/html\r\n";
+
+        // 获取文件大小
+        file.seekg(0, std::ios::end);
+        int fileSize = file.tellg();
+        file.seekg(0, std::ios::beg);
+        response << "Content-Length: " + std::to_string(fileSize) + "\r\n";
+
         response << "\r\n";
         response << file.rdbuf();
 
+        file.close();
         return response.str();
     }
     else if (httpRequest.find("GET /Second.html HTTP/1.1") != std::string::npos)
     {
         // 处理 demo2.html 的HTTP请求
-        std::ifstream demo2File("src/Second.html");
-        if (!demo2File.is_open())
+        std::ifstream file("src/Second.html");
+        if (!file.is_open())
         {
             return "HTTP/1.1 404 Not Found\r\n\r\nFile not found";
         }
@@ -49,9 +57,17 @@ std::string generateHttpResponse(const std::string &httpRequest)
         std::ostringstream response;
         response << "HTTP/1.1 200 OK\r\n";
         response << "Content-Type: text/html\r\n";
-        response << "\r\n";
-        response << demo2File.rdbuf();
 
+        // 获取文件大小
+        file.seekg(0, std::ios::end);
+        int fileSize = file.tellg();
+        file.seekg(0, std::ios::beg);
+        response << "Content-Length: " + std::to_string(fileSize) + "\r\n";
+
+        response << "\r\n";
+        response << file.rdbuf();
+
+        file.close();
         return response.str();
     }
     else if (httpRequest.find("GET /a.png HTTP/1.1") != std::string::npos)
@@ -66,30 +82,44 @@ std::string generateHttpResponse(const std::string &httpRequest)
         std::ostringstream response;
         response << "HTTP/1.1 200 OK\r\n";
         response << "Content-Type: image/png\r\n"; // 设置正确的Content-Type
+
+        // 获取文件大小
+        imageFile.seekg(0, std::ios::end);
+        int fileSize = imageFile.tellg();
+        imageFile.seekg(0, std::ios::beg);
+
+        response << "Content-Length: " + std::to_string(fileSize) + "\r\n";
         response << "\r\n";
 
         // 读取并发送图片数据
         response << imageFile.rdbuf();
-
+        imageFile.close();
         return response.str();
     }
     else if (httpRequest.find("GET /iphone.mp4 HTTP/1.1") != std::string::npos)
     {
-        // 处理图片的HTTP请求
-        std::ifstream imageFile("src/iphone.mp4", std::ios::binary);
-        if (!imageFile.is_open())
+        std::ifstream videoFile("src/iphone.mp4", std::ios::binary);
+        if (!videoFile.is_open())
         {
             return "HTTP/1.1 404 Not Found\r\n\r\nFile not found";
         }
 
         std::ostringstream response;
         response << "HTTP/1.1 200 OK\r\n";
-        response << "Content-Type: image/png\r\n"; // 设置正确的Content-Type
+        response << "Content-Type: video/mp4\r\n";
+
+        // 获取文件大小
+        videoFile.seekg(0, std::ios::end);
+        int fileSize = videoFile.tellg();
+        videoFile.seekg(0, std::ios::beg);
+
+        response << "Content-Length: " + std::to_string(fileSize) + "\r\n";
         response << "\r\n";
 
-        // 读取并发送图片数据
-        response << imageFile.rdbuf();
+        // 读取并发送视频数据
+        response << videoFile.rdbuf();
 
+        videoFile.close();
         return response.str();
     }
     else
@@ -323,6 +353,7 @@ int main(int argc, char *argv[])
 
                 int totalSent = 0;
                 int dataLength = epoll_httpResponse.length();
+
                 while (totalSent < dataLength)
                 {
                     epoll_ret = send(clientfd, epoll_httpResponse.c_str() + totalSent, dataLength - totalSent, 0);
@@ -345,7 +376,6 @@ int main(int argc, char *argv[])
 
                 ev.events = EPOLLIN;
                 ev.data.fd = clientfd;
-                // epoll_ctl(epfd, EPOLL_CTL_MOD, clientfd, &ev);
                 // 因为是Http所以处理完数据后关闭连接
                 epoll_ctl(epfd, EPOLL_CTL_DEL, clientfd, &ev);
                 close(clientfd);
