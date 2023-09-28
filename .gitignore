@@ -22,5 +22,8 @@
 # 忽略 .out 文件
 *.out
 
+# 忽略路径为 build 的文件夹
+build/
+
 # 忽略路径为 build/CMakeFiles 的文件夹
 build/CMakeFiles/

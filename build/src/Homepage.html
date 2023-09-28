@@ -3,127 +3,103 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>赛博朋克风格页面</title>
+    <title>欢迎来到Chitoy</title>
     <style>
+        /* 设置背景颜色 */
         body {
-            background-color: #3a4660; /* 紫色背景 */
-            color: #f3d150; /* 黄色文本 */
-            font-family: "Arial", sans-serif;
             margin: 0;
             padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
+            background-color: #f5f5f5; /* 整体背景色 */
+            font-family: Arial, sans-serif;
         }
 
-        .header img {
-            width: 100px;
-            height: 100px;
-            border: 2px solid #f3d150; /* 黄色边框 */
-            border-radius: 10px;
-        }
-
-        .content {
-            background-color: #0f3460; /* 蓝色内容背景 */
-            padding: 20px;
-            margin: 20px;
-            box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.3);
-            border-radius: 10px;
-            text-align: left;
-            max-width: 600px;
-        }
-
+        /* 页面标题样式 */
         h1 {
-            color: #f3d150;
             text-align: center;
-        }
-
-        p {
-            color: #f3d150;
-            font-size: 18px;
-        }
-
-        .skills {
-            background-color: #864d27; /* 棕色技能背景 */
-            color: #f3d150;
-            padding: 10px;
-            border-radius: 5px;
-            display: inline-block;
-            margin-right: 5px;
-        }
-
-        .footer {
-            background-color: #001f3f; /* 蓝色页脚背景 */
-            color: #f3d150;
-            text-align: center;
-            padding: 10px;
-        }
-
-        button {
-            background-color: #ff6b6b; /* 红色按钮 */
+            padding: 20px;
+            background-color: #333; /* 标题背景颜色 */
             color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-top: 20px;
-            display: block;
-            margin-left: auto;
-            margin-right: auto;
         }
 
-        /* 添加图片样式 */
-        .image {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            width: 100px;
-            height: 100px;
-            border: 2px solid #f3d150; /* 黄色边框 */
-            border-radius: 10px;
+        /* 图片容器样式 */
+        .image-container {
+            text-align: center;
+            margin: 20px auto;
+            width: 300px; /* 图片容器宽度 */
+        }
+
+        /* 图片样式 */
+        .image-container img {
+            width: 100%;
+            border: 1px solid #f3d150; /* 图片边框 */
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        /* 图片描述文字样式 */
+        .image-description {
+            font-size: 18px;
+            margin-top: 10px;
+        }
+
+        /* 页脚样式 */
+        footer {
+            text-align: center;
+            background-color: #333; /* 页脚背景颜色 */
+            color: white;
+            padding: 10px;
         }
     </style>
 </head>
 <body>
-    <div class="header">
-        <img src="a.png" alt="a Photo" class="image"> <!-- 添加图片元素 -->
-    </div>
-    <div class="content">
-        <h1>求职简历</h1>
-        <p><strong>姓名：</strong> chitoylala</p>
-        <p><strong>年龄：</strong> 13</p>
-        <p><strong>联系方式：</strong> chitoylala@gmail.com</p>
-        <p><strong>地址：</strong> chitoylala</p>
-        <h2>个人技能</h2>
-        <ul>
-            <li class="skills">技能1</li>
-            <li class="skills">技能2</li>
-            <li class="skills">技能3</li>
-        </ul>
-        <h2>工作经历</h2>
-        <p><strong>公司1：</strong> 职位1 - 日期1</p>
-        <p><strong>公司2：</strong> 职位2 - 日期2</p>
-        <h2>教育背景</h2>
-        <p><strong>学校1：</strong> 职位2 - 日期3</p>
-        <!-- 添加一个按钮，用于切换到demo2.html -->
-        <button id="switchToDemo2Button">赛博朋克</button>
-    </div>
-    <div class="footer">
-        &copy; 2023 chitoylala
+    <!-- 页面标题 -->
+    <h1>欢迎来到Chitoy</h1>
+
+    <!-- 图片容器 1，点击切换到页面 1 -->
+    <div class="image-container">
+        <img src="a.png" alt="视频 1" id="image1">
+        <p class="image-description">Chi</p>
     </div>
 
-    <!-- 添加以下JavaScript代码 -->
+    <!-- 图片容器 2，点击切换到页面 2 -->
+    <div class="image-container">
+        <img src="b.png" alt="视频 2" id="image2">
+        <p class="image-description">Toy</p>
+    </div>
+
+    <!-- 图片容器 3，点击切换到页面 3 -->
+    <div class="image-container">
+        <img src="c.png" alt="视频 3" id="image3">
+        <p class="image-description">lala</p>
+    </div>
+
+    <!-- 添加更多图片容器和链接，根据需要 -->
+
     <script>
-        // 获取按钮元素
-        var switchToDemo2Button = document.getElementById("switchToDemo2Button");
+        // 获取图片元素
+        var image1 = document.getElementById("image1");
+        var image2 = document.getElementById("image2");
+        var image3 = document.getElementById("image3");
 
-        // 添加按钮点击事件处理程序
-        switchToDemo2Button.addEventListener("click", function() {
-            // 修改浏览器地址栏的URL
-            window.location.href = "http://www.pyszzu.buzz/Second.html"; // 请替换为您的服务器域名和路径
+        // 添加点击事件处理程序
+        image1.addEventListener("click", function() {
+            window.location.href = "a.html"; // 点击跳转到页面 1 的 URL
         });
+
+        image2.addEventListener("click", function() {
+            window.location.href = "b.html"; // 点击跳转到页面 2 的 URL
+        });
+
+        image3.addEventListener("click", function() {
+            window.location.href = "c.html"; // 点击跳转到页面 3 的 URL
+        });
+
+        // 添加更多图片的点击事件，根据需要
     </script>
+
+    <!-- 页脚 -->
+    <footer>
+        &copy; 2023 Chitoy 版权所有.
+    </footer>
 </body>
 </html>

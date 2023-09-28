@@ -3,5 +3,15 @@
   "directory": "/home/Pys/Cpp/SeverHttp/build",
   "command": "/usr/bin/g++    -g   -std=gnu++17 -o CMakeFiles/HttpServer.dir/main.cpp.o -c /home/Pys/Cpp/SeverHttp/main.cpp",
   "file": "/home/Pys/Cpp/SeverHttp/main.cpp"
+},
+{
+  "directory": "/home/Pys/Cpp/SeverHttp/build",
+  "command": "/usr/bin/g++    -g   -std=gnu++17 -o CMakeFiles/HttpServer.dir/threadnotify.cpp.o -c /home/Pys/Cpp/SeverHttp/threadnotify.cpp",
+  "file": "/home/Pys/Cpp/SeverHttp/threadnotify.cpp"
+},
+{
+  "directory": "/home/Pys/Cpp/SeverHttp/build",
+  "command": "/usr/bin/g++    -g   -std=gnu++17 -o CMakeFiles/HttpServer.dir/toolFun.cpp.o -c /home/Pys/Cpp/SeverHttp/toolFun.cpp",
+  "file": "/home/Pys/Cpp/SeverHttp/toolFun.cpp"
 }
 ]

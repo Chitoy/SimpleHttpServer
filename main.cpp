@@ -10,6 +10,9 @@
 #include <cstring>
 #include <thread>
 #include <sys/epoll.h>
+
+#include "toolFun.h"
+
 #define Demo 0
 #define SELECT 0
 #define EPOLL 1
@@ -20,10 +23,13 @@
 // 函数声明
 std::string generateHttpResponse(const std::string &httpRequest)
 {
+    // 输出解析的http请求
+    std::cout << "+++++++++++++++输出解析的http请求" << analysisHttp(httpRequest) << std::endl;
+
     if (httpRequest.find("GET / HTTP/1.1") != std::string::npos)
     {
         // 处理根路径的HTTP请求
-        std::ifstream file("src/Homepage.html");
+        std::ifstream file("/home/Pys/Cpp/SeverHttp/build/src/Homepage.html");
         if (!file.is_open())
         {
             return "HTTP/1.1 404 Not Found\r\n\r\nFile not found";
@@ -48,7 +54,7 @@ std::string generateHttpResponse(const std::string &httpRequest)
     else if (httpRequest.find("GET /Second.html HTTP/1.1") != std::string::npos)
     {
         // 处理 demo2.html 的HTTP请求
-        std::ifstream file("src/Second.html");
+        std::ifstream file("/home/Pys/Cpp/SeverHttp/build/src/Second.html");
         if (!file.is_open())
         {
             return "HTTP/1.1 404 Not Found\r\n\r\nFile not found";
@@ -73,7 +79,7 @@ std::string generateHttpResponse(const std::string &httpRequest)
     else if (httpRequest.find("GET /a.png HTTP/1.1") != std::string::npos)
     {
         // 处理图片的HTTP请求
-        std::ifstream imageFile("src/a.png", std::ios::binary);
+        std::ifstream imageFile("/home/Pys/Cpp/SeverHttp/build/src/a.png", std::ios::binary);
         if (!imageFile.is_open())
         {
             return "HTTP/1.1 404 Not Found\r\n\r\nFile not found";
@@ -98,7 +104,33 @@ std::string generateHttpResponse(const std::string &httpRequest)
     }
     else if (httpRequest.find("GET /iphone.mp4 HTTP/1.1") != std::string::npos)
     {
-        std::ifstream videoFile("src/iphone.mp4", std::ios::binary);
+        std::ifstream videoFile("/home/Pys/Cpp/SeverHttp/build/src/iphone.mp4", std::ios::binary);
+        if (!videoFile.is_open())
+        {
+            return "HTTP/1.1 404 Not Found\r\n\r\nFile not found";
+        }
+
+        std::ostringstream response;
+        response << "HTTP/1.1 200 OK\r\n";
+        response << "Content-Type: video/mp4\r\n";
+
+        // 获取文件大小
+        videoFile.seekg(0, std::ios::end);
+        int fileSize = videoFile.tellg();
+        videoFile.seekg(0, std::ios::beg);
+
+        response << "Content-Length: " + std::to_string(fileSize) + "\r\n";
+        response << "\r\n";
+
+        // 读取并发送视频数据
+        response << videoFile.rdbuf();
+
+        videoFile.close();
+        return response.str();
+    }
+    else if (httpRequest.find("GET /q.mp4 HTTP/1.1") != std::string::npos)
+    {
+        std::ifstream videoFile("/home/Pys/Cpp/SeverHttp/build/src/q.mp4", std::ios::binary);
         if (!videoFile.is_open())
         {
             return "HTTP/1.1 404 Not Found\r\n\r\nFile not found";
@@ -148,7 +180,32 @@ void routine(void *arg)
 
         std::string httpRequest(reinterpret_cast<char *>(buffer), ret);
         std::string httpResponse = generateHttpResponse(httpRequest);
-        ret = send(clientfd, httpResponse.c_str(), httpResponse.length(), 0);
+        // ret = send(clientfd, httpResponse.c_str(), httpResponse.length(), 0);
+
+        int totalSent = 0;
+        int dataLength = httpResponse.length();
+        while (totalSent < dataLength)
+        {
+            ret = send(clientfd, httpResponse.c_str() + totalSent, dataLength - totalSent, 0);
+            if (ret == -1)
+            {
+                if (errno == EAGAIN || errno == EWOULDBLOCK)
+                {
+                    // 资源暂时不可用，稍后重试
+                    continue;
+                }
+                else
+                {
+                    // 发生其他错误，需要处理错误并退出循环
+                    perror("send");
+                    break;
+                }
+            }
+            totalSent += ret;
+        }
+
+        close(clientfd);
+        break;
     }
 }
 
@@ -333,7 +390,7 @@ int main(int argc, char *argv[])
 
                     printf("recv: %s, n: %d\n", epoll_buffer, epoll_ret);
                     std::string httpRequest(reinterpret_cast<char *>(epoll_buffer), epoll_ret);
-                    epoll_httpResponse = generateHttpResponse(httpRequest);
+                    epoll_httpResponse = handleHttpRequest(httpRequest);
 
                     ev.events = EPOLLOUT;
                     ev.data.fd = clientfd;
@@ -341,28 +398,35 @@ int main(int argc, char *argv[])
                 }
                 else if (epoll_ret == 0)
                 {
-                    epoll_ctl(epfd, EPOLL_CTL_DEL, clientfd, &ev);
                     close(clientfd);
+                    epoll_ctl(epfd, EPOLL_CTL_DEL, clientfd, nullptr);
                     std::cout << "关闭连接:" << clientfd << std::endl;
                 }
             }
             else if (events[i].events & EPOLLOUT)
             {
                 std::cout << "发送数据+++++++++++++++++++++++=" << std::endl;
-                // int sent = send(clientfd, epoll_httpResponse.c_str(), epoll_httpResponse.length(), 0);
 
                 int totalSent = 0;
                 int dataLength = epoll_httpResponse.length();
 
                 while (totalSent < dataLength)
                 {
-                    epoll_ret = send(clientfd, epoll_httpResponse.c_str() + totalSent, dataLength - totalSent, 0);
+                    int bytesToSend = std::min(dataLength - totalSent, BUFFER_LENGTH); // 每次发送的数据大小
+
+                    epoll_ret = send(clientfd, epoll_httpResponse.c_str() + totalSent, bytesToSend, MSG_NOSIGNAL);
                     if (epoll_ret == -1)
                     {
                         if (errno == EAGAIN || errno == EWOULDBLOCK)
                         {
                             // 资源暂时不可用，稍后重试
                             continue;
+                        }
+                        else if (errno == EPIPE)
+                        {
+                            close(clientfd);
+                            epoll_ctl(epfd, EPOLL_CTL_DEL, clientfd, nullptr);
+                            std::cout << "浏览器主动关闭连接:" << clientfd << std::endl;
                         }
                         else
                         {
@@ -371,14 +435,15 @@ int main(int argc, char *argv[])
                             break;
                         }
                     }
+
                     totalSent += epoll_ret;
                 }
 
                 ev.events = EPOLLIN;
                 ev.data.fd = clientfd;
                 // 因为是Http所以处理完数据后关闭连接
-                epoll_ctl(epfd, EPOLL_CTL_DEL, clientfd, &ev);
                 close(clientfd);
+                epoll_ctl(epfd, EPOLL_CTL_DEL, clientfd, nullptr);
                 std::cout << "关闭连接:" << clientfd << std::endl;
             }
         }
