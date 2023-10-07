@@ -179,14 +179,15 @@ void routine(void *arg)
         printf("buffer : %s, ret: %d\n", buffer, ret);
 
         std::string httpRequest(reinterpret_cast<char *>(buffer), ret);
-        std::string httpResponse = generateHttpResponse(httpRequest);
-        // ret = send(clientfd, httpResponse.c_str(), httpResponse.length(), 0);
+        // std::string httpResponse = generateHttpResponse(httpRequest);
+        //  ret = send(clientfd, httpResponse.c_str(), httpResponse.length(), 0);
 
         int totalSent = 0;
-        int dataLength = httpResponse.length();
+        int dataLength = httpRequest.length();
         while (totalSent < dataLength)
         {
-            ret = send(clientfd, httpResponse.c_str() + totalSent, dataLength - totalSent, 0);
+            ret = send(clientfd, httpRequest.c_str() + totalSent, dataLength - totalSent, 0);
+            std::cout << httpRequest << std::endl;
             if (ret == -1)
             {
                 if (errno == EAGAIN || errno == EWOULDBLOCK)
@@ -204,8 +205,8 @@ void routine(void *arg)
             totalSent += ret;
         }
 
-        close(clientfd);
-        break;
+        // close(clientfd);
+        //break;
     }
 }
 
@@ -302,6 +303,7 @@ int main(int argc, char *argv[])
                     printf("buffer : %s, ret: %d\n", buffer, ret);
                     std::string httpRequest(reinterpret_cast<char *>(buffer), ret);
                     httpResponse = generateHttpResponse(httpRequest);
+                    std::cout << "收到请求：+++++++++++++++" << httpRequest << std::endl;
                     FD_SET(i, &wfds);
                 }
             }
@@ -313,6 +315,8 @@ int main(int argc, char *argv[])
 
                 int totalSent = 0;
                 int dataLength = httpResponse.length();
+
+                std::cout << "发送出去的数据：+++++++++++++++" << httpResponse << std::endl;
                 while (totalSent < dataLength)
                 {
                     ret = send(i, httpResponse.c_str() + totalSent, dataLength - totalSent, 0);

@@ -67,7 +67,8 @@ std::string handleHttpRequest(const std::string &httpRequest)
         return response.str();
     }
     else if ((strSrc.find(".png") != std::string::npos) ||
-             (strSrc.find(".jpg") != std::string::npos))
+             (strSrc.find(".jpg") != std::string::npos)||
+             (strSrc.find(".ico") != std::string::npos))
     {
         std::string strHtml = "src" + strSrc;
         std::ifstream file(strHtml);
