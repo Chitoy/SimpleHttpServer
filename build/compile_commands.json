@@ -1,17 +1,27 @@
 [
 {
   "directory": "/home/Pys/Cpp/SeverHttp/build",
-  "command": "/usr/bin/g++    -g   -std=gnu++17 -o CMakeFiles/HttpServer.dir/main.cpp.o -c /home/Pys/Cpp/SeverHttp/main.cpp",
+  "command": "/usr/bin/g++   -I/usr/include/x86_64-linux-gnu -I/home/Pys/Cpp/SeverHttp/json/include  -g   -std=gnu++17 -o CMakeFiles/HttpServer.dir/main.cpp.o -c /home/Pys/Cpp/SeverHttp/main.cpp",
   "file": "/home/Pys/Cpp/SeverHttp/main.cpp"
 },
 {
   "directory": "/home/Pys/Cpp/SeverHttp/build",
-  "command": "/usr/bin/g++    -g   -std=gnu++17 -o CMakeFiles/HttpServer.dir/threadnotify.cpp.o -c /home/Pys/Cpp/SeverHttp/threadnotify.cpp",
+  "command": "/usr/bin/g++   -I/usr/include/x86_64-linux-gnu -I/home/Pys/Cpp/SeverHttp/json/include  -g   -std=gnu++17 -o CMakeFiles/HttpServer.dir/threadnotify.cpp.o -c /home/Pys/Cpp/SeverHttp/threadnotify.cpp",
   "file": "/home/Pys/Cpp/SeverHttp/threadnotify.cpp"
 },
 {
   "directory": "/home/Pys/Cpp/SeverHttp/build",
-  "command": "/usr/bin/g++    -g   -std=gnu++17 -o CMakeFiles/HttpServer.dir/toolFun.cpp.o -c /home/Pys/Cpp/SeverHttp/toolFun.cpp",
+  "command": "/usr/bin/g++   -I/usr/include/x86_64-linux-gnu -I/home/Pys/Cpp/SeverHttp/json/include  -g   -std=gnu++17 -o CMakeFiles/HttpServer.dir/toolFun.cpp.o -c /home/Pys/Cpp/SeverHttp/toolFun.cpp",
   "file": "/home/Pys/Cpp/SeverHttp/toolFun.cpp"
+},
+{
+  "directory": "/home/Pys/Cpp/SeverHttp/build",
+  "command": "/usr/bin/g++   -I/usr/include/x86_64-linux-gnu -I/home/Pys/Cpp/SeverHttp/json/include  -g   -std=gnu++17 -o CMakeFiles/HttpServer.dir/Chatgpt.cpp.o -c /home/Pys/Cpp/SeverHttp/Chatgpt.cpp",
+  "file": "/home/Pys/Cpp/SeverHttp/Chatgpt.cpp"
+},
+{
+  "directory": "/home/Pys/Cpp/SeverHttp/build",
+  "command": "/usr/bin/g++   -I/usr/include/x86_64-linux-gnu -I/home/Pys/Cpp/SeverHttp/json/include  -g   -std=gnu++17 -o CMakeFiles/HttpServer.dir/EpollServer.cpp.o -c /home/Pys/Cpp/SeverHttp/EpollServer.cpp",
+  "file": "/home/Pys/Cpp/SeverHttp/EpollServer.cpp"
 }
 ]

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,7 +10,8 @@
         body {
             margin: 0;
             padding: 0;
-            background-color: #f5f5f5; /* 整体背景色 */
+            background-color: #f5f5f5;
+            /* 整体背景色 */
             font-family: Arial, sans-serif;
         }
 
@@ -17,7 +19,8 @@
         h1 {
             text-align: center;
             padding: 20px;
-            background-color: #333; /* 标题背景颜色 */
+            background-color: #333;
+            /* 标题背景颜色 */
             color: white;
         }
 
@@ -25,13 +28,15 @@
         .image-container {
             text-align: center;
             margin: 20px auto;
-            width: 300px; /* 图片容器宽度 */
+            width: 300px;
+            /* 图片容器宽度 */
         }
 
         /* 图片样式 */
         .image-container img {
             width: 100%;
-            border: 1px solid #f3d150; /* 图片边框 */
+            border: 1px solid #f3d150;
+            /* 图片边框 */
             border-radius: 3px;
             cursor: pointer;
         }
@@ -45,15 +50,75 @@
         /* 页脚样式 */
         footer {
             text-align: center;
-            background-color: #333; /* 页脚背景颜色 */
+            background-color: #333;
+            /* 页脚背景颜色 */
             color: white;
             padding: 10px;
         }
+
+        /* 新增文本框样式 */
+        .text-box-container {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .text-box {
+            width: auto;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin: 0 10px;
+        }
+
+        #searchInput {
+            width: auto;
+        }
+
+        /* 新增对话按钮样式 */
+        #addConversationButton {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        /* 对话列表下拉框样式 */
+        #conversationDropdown {
+            width: 100px;
+            height:40px;
+        }
+
+        /* 删除对话按钮样式 */
+        #deleteConversationButton {
+            background-color: #FF5733;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
     </style>
 </head>
+
 <body>
     <!-- 页面标题 -->
     <h1>欢迎来到Chitoy</h1>
+
+    <!-- 新增文本输入框、查询按钮和自动适应文本框 -->
+    <div class="text-box-container">
+        <input type="text" id="searchInput" placeholder="输入查询文本" class="text-box">
+        <button id="searchButton">查询</button>
+        <!-- 新增对话按钮、对话列表下拉框和删除对话按钮 -->
+        <!-- <div class="text-box-container">
+            <button id="addConversationButton">新增对话</button>
+            <select id="conversationDropdown"></select>
+            <button id="deleteConversationButton">删除对话</button>
+        </div> -->
+        <!-- 新增对话按钮、对话列表下拉框和删除对话按钮 -->
+        <div id="autoResizeTextBox" class="text-box" contenteditable="true"></div>
+    </div>
 
     <!-- 图片容器 1，点击切换到页面 1 -->
     <div class="image-container">
@@ -81,20 +146,142 @@
         var image2 = document.getElementById("image2");
         var image3 = document.getElementById("image3");
 
+        // 获取查询按钮和输入框
+        var searchButton = document.getElementById("searchButton");
+        var searchInput = document.getElementById("searchInput");
+
+        //增删对话
+        var addConversationButton = document.getElementById("addConversationButton");
+        var conversationDropdown = document.getElementById("conversationDropdown");
+        var deleteConversationButton = document.getElementById("deleteConversationButton");
+
+        // 获取自动适应文本框
+        var autoResizeTextBox = document.getElementById("autoResizeTextBox");
+
+        
+
         // 添加点击事件处理程序
-        image1.addEventListener("click", function() {
+        image1.addEventListener("click", function () {
             window.location.href = "a.html"; // 点击跳转到页面 1 的 URL
         });
 
-        image2.addEventListener("click", function() {
+        image2.addEventListener("click", function () {
             window.location.href = "b.html"; // 点击跳转到页面 2 的 URL
         });
 
-        image3.addEventListener("click", function() {
+        image3.addEventListener("click", function () {
             window.location.href = "c.html"; // 点击跳转到页面 3 的 URL
         });
 
         // 添加更多图片的点击事件，根据需要
+
+        // 添加查询按钮点击事件处理程序
+        searchButton.addEventListener("click", function () {
+            // 获取输入框中的文本
+            var searchText = searchInput.value;
+
+            // 清空文本框内容
+            // autoResizeTextBox.innerHTML = '创建包含不同样式的文本段落';
+
+            // 创建包含不同样式的文本段落
+            var styledText = document.createElement('p');
+            styledText.innerText = searchText;
+
+            // 添加样式
+            styledText.style.fontWeight = 'bold'; // 加粗
+            styledText.style.color = 'blue'; // 蓝色
+            styledText.style.fontSize = '24px'; // 字体大小
+            styledText.style.textAlign = 'right'; // 右对齐
+
+            // 将带有样式的文本段落添加到文本框内
+            //autoResizeTextBox.appendChild(styledText);
+            if (autoResizeTextBox.firstChild) {
+                autoResizeTextBox.insertBefore(styledText, autoResizeTextBox.firstChild);
+            } else {
+                autoResizeTextBox.appendChild(styledText);
+            }
+
+            // 创建GET请求
+            var url = "http://www.pyszzu.buzz/search/" + encodeURIComponent(searchText);
+            var request = new Request(url, {
+                method: "GET", // 请求方法为GET
+                headers: {
+                    "Content-Type": "text/plain" // 设置请求头
+                }
+            });
+
+            // 发送请求到后台
+            fetch(request)
+                .then(function (response) {
+                    // 检查响应的状态码
+                    if (response.ok) {
+                        // 根据后台返回的内容类型来处理不同类型的响应
+                        if (response.headers.get("Content-Type") === "text/html") {
+                            // 处理HTML响应
+                            return response.text(); // 解析HTML响应
+                        } else if (response.headers.get("Content-Type") === "text/plain") {
+                            // 处理图片响应
+                            return response.text(); // 解析图片响应
+                        } else if (response.headers.get("Content-Type") === "image/png") {
+                            // 处理图片响应
+                            return response.blob(); // 解析图片响应
+                        } else if (response.headers.get("Content-Type") === "video/mp4") {
+                            // 处理视频响应
+                            return response.blob(); // 解析视频响应
+                        } else {
+                            throw new Error("未知的响应类型");
+                        }
+                    } else {
+                        throw new Error("请求失败");
+                    }
+                })
+                .then(function (data) {
+                    if (typeof data === "string") {
+                        // 获取输入框中的文本
+                        var Text = data;
+
+                        // 清空文本框内容
+                        // autoResizeTextBox.innerHTML = '创建包含不同样式的文本段落';
+
+                        // 创建包含不同样式的文本段落
+                        var styText = document.createElement('p');
+                        styText.innerText = Text;
+
+                        // 添加样式
+                        styText.style.fontWeight = 'bold'; // 加粗
+                        styText.style.color = 'green'; // 蓝色
+                        styText.style.fontSize = '24px'; // 字体大小
+                        styText.style.textAlign = 'left'; // 左对齐
+
+                        // 将带有样式的文本段落添加到文本框内
+                        //autoResizeTextBox.appendChild(styText);
+                        if (autoResizeTextBox.firstChild) {
+                            autoResizeTextBox.insertBefore(styText, autoResizeTextBox.firstChild);
+                        } else {
+                            autoResizeTextBox.appendChild(styText);
+                        }
+                    }
+                })
+                .catch(function (error) {
+                    // 发生错误时的处理
+                    alert(error.message);
+                });
+
+            // 清空输入框
+            searchInput.value = "";
+        });
+
+        // 添加回车键按下事件处理程序
+        searchInput.addEventListener("keydown", function (event) {
+            // 检查按下的键是否是回车键（键码为13）
+            if (event.keyCode === 13) {
+                // 阻止默认的回车键行为（防止表单提交等）
+                event.preventDefault();
+
+                // 触发查询按钮的点击事件
+                searchButton.click();
+            }
+        });
     </script>
 
     <!-- 页脚 -->
@@ -102,4 +289,5 @@
         &copy; 2023 Chitoy 版权所有.
     </footer>
 </body>
+
 </html>

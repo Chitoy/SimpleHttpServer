@@ -50,6 +50,18 @@
         "thread": "cpp",
         "condition_variable": "cpp",
         "map": "cpp",
-        "mutex": "cpp"
+        "mutex": "cpp",
+        "bitset": "cpp",
+        "regex": "cpp",
+        "any": "cpp",
+        "codecvt": "cpp",
+        "csignal": "cpp",
+        "forward_list": "cpp",
+        "list": "cpp",
+        "unordered_set": "cpp",
+        "set": "cpp",
+        "iomanip": "cpp",
+        "valarray": "cpp",
+        "variant": "cpp"
     }
 }

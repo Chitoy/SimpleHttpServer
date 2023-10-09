@@ -24,7 +24,6 @@
 std::string generateHttpResponse(const std::string &httpRequest)
 {
     // 输出解析的http请求
-    std::cout << "+++++++++++++++输出解析的http请求" << analysisHttp(httpRequest) << std::endl;
 
     if (httpRequest.find("GET / HTTP/1.1") != std::string::npos)
     {
@@ -187,7 +186,6 @@ void routine(void *arg)
         while (totalSent < dataLength)
         {
             ret = send(clientfd, httpRequest.c_str() + totalSent, dataLength - totalSent, 0);
-            std::cout << httpRequest << std::endl;
             if (ret == -1)
             {
                 if (errno == EAGAIN || errno == EWOULDBLOCK)
@@ -387,7 +385,6 @@ int main(int argc, char *argv[])
             }
             else if (events[i].events & EPOLLIN)
             {
-                std::cout << "接收数据+++++++++++++++++++++++=" << std::endl;
                 epoll_ret = recv(clientfd, epoll_buffer, BUFFER_LENGTH, 0);
                 if (epoll_ret > 0)
                 {
@@ -409,8 +406,6 @@ int main(int argc, char *argv[])
             }
             else if (events[i].events & EPOLLOUT)
             {
-                std::cout << "发送数据+++++++++++++++++++++++=" << std::endl;
-
                 int totalSent = 0;
                 int dataLength = epoll_httpResponse.length();
 
