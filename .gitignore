@@ -23,7 +23,7 @@
 *.out
 
 # 忽略路径为 build 的文件夹
-#build/
+build/
 
 # 不忽略 build/src/ 目录下的 HTML 文件
 !build/src/*.html
