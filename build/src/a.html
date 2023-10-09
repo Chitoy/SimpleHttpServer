@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>视频播放页面</title>
+    <link rel="icon" type="image/x-icon" href="icon.ico">
+    <style>
+        /* 设置背景图片 */
+        body {
+            margin: 0;
+            padding: 0;
+            background-image: url('a.png');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            font-family: Arial, sans-serif;
+        }
+
+        /* 页面容器样式 */
+        .page-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        /* 视频容器样式 */
+        .video-container {
+            max-width: 80%; /* 限制视频容器宽度 */
+            max-height: 70vh; /* 限制视频容器高度 */
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* 视频样式 */
+        video {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* 切换视频按钮样式 */
+        #changeVideoButton {
+            display: block;
+            width: 150px; /* 按钮宽度 */
+            padding: 10px;
+            margin: 20px auto; /* 居中显示按钮，留有一定的间距 */
+            background-color: #007acc; /* 按钮背景颜色 */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        /* 鼠标悬停样式 */
+        #changeVideoButton:hover {
+            background-color: #005f8a; /* 悬停时背景颜色 */
+        }
+
+        /* 页脚样式 */
+        footer {
+            text-align: center;
+            background-color: #333; /* 页脚背景颜色 */
+            color: white;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+    <!-- 页面容器 -->
+    <div class="page-container">
+        <!-- 添加视频播放器 -->
+        <div class="video-container">
+            <video id="videoPlayer" controls>
+                <source src="a.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+        </div>
+        
+        <!-- 切换视频按钮 -->
+        <button id="changeVideoButton">千万别点</button>
+    </div>
+
+    <script>
+        // 获取视频元素和切换视频按钮元素
+        const video = document.getElementById('videoPlayer');
+        const changeVideoButton = document.getElementById('changeVideoButton');
+
+        // 添加切换视频按钮点击事件处理程序
+        changeVideoButton.addEventListener('click', function() {
+            // 切换视频源为另一个视频文件，并播放
+            video.src = 'q.mp4'; // 替换为另一个视频文件的路径
+            video.play();
+        });
+    </script>
+
+    <!-- 页脚 -->
+    <footer>
+        &copy; 2023 Chitoy 版权所有.
+    </footer>
+    
+</body>
+</html>
