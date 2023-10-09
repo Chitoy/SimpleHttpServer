@@ -60,12 +60,20 @@ void CChatgpt::InitRequestData()
     m_jsRequestData["messages"].emplace_back(message1);
 }
 
-void CChatgpt::AddJsonSystemRole(json &jsReq)
+void CChatgpt::SetJsonSystemRole(std::string strNewRole)
 {
-    json message1;
-    message1["role"] = "system";
-    message1["content"] = "You are a helpful assistant.";
-    jsReq["messages"].emplace_back(message1);
+    json &messages = m_jsRequestData["messages"];
+
+    for (auto &message : messages)
+    {
+        if (message.find("role") != message.end() && message["role"] == "system")
+        {
+            if (message.find("content") != message.end())
+            {
+                message["content"] = strNewRole;
+            }
+        }
+    }
 }
 
 void CChatgpt::AppendRoleMessage(std::string &strRole, std::string &strMsg)
