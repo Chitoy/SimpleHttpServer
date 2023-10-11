@@ -16,7 +16,7 @@ CChatgpt::CChatgpt()
     if (m_pCurl)
     {
         std::string url = "https://api.openai.com/v1/chat/completions";
-        std::string apiKey = ""; // 替换为您的ChatGPT API密钥
+        std::string apiKey = "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"; // 替换为您的ChatGPT API密钥
 
         // 设置HTTP请求头
         m_pHeaders = curl_slist_append(m_pHeaders, "Content-Type: application/json");

@@ -12,13 +12,18 @@
 #include <sys/epoll.h>
 
 #include "toolFun.h"
+#include "EpollServer.h"
 
 #define Demo 0
 #define SELECT 0
-#define EPOLL 1
+#define EPOLL 0
 #define IO_USING 0
+#define USE_SERVER 1
 
+#if USE_SERVER
+#else
 #define BUFFER_LENGTH 8196
+#endif
 
 // 函数声明
 std::string generateHttpResponse(const std::string &httpRequest)
@@ -204,12 +209,17 @@ void routine(void *arg)
         }
 
         // close(clientfd);
-        //break;
+        // break;
     }
 }
 
 int main(int argc, char *argv[])
 {
+#if USE_SERVER
+    CEpollServer server;
+    server.InitServer();
+    server.RunServer();
+#else
     // 创建socket
     int listenfd = socket(AF_INET, SOCK_STREAM, 0);
     if (listenfd == -1)
@@ -379,29 +389,51 @@ int main(int argc, char *argv[])
                 int flags = fcntl(connfd, F_GETFL, 0);
                 fcntl(connfd, F_SETFL, flags | O_NONBLOCK);
 
-                ev.events = EPOLLIN | EPOLLET;
+                ev.events = EPOLLIN | EPOLLET; // 使用edge-trigger
                 ev.data.fd = connfd;
                 epoll_ctl(epfd, EPOLL_CTL_ADD, connfd, &ev);
             }
             else if (events[i].events & EPOLLIN)
             {
-                epoll_ret = recv(clientfd, epoll_buffer, BUFFER_LENGTH, 0);
-                if (epoll_ret > 0)
+                std::string httpRequest; // 用于累积完整的 HTTP 请求
+                while (true)
                 {
+                    epoll_ret = recv(clientfd, epoll_buffer, BUFFER_LENGTH, 0);
+                    if (epoll_ret > 0)
+                    {
+                        std::string receivedData(epoll_buffer, epoll_ret);
+                        httpRequest += receivedData;
+                    }
+                    else if (epoll_ret == 0)
+                    {
+                        // 客户端关闭连接的处理
+                        close(clientfd);
+                        epoll_ctl(epfd, EPOLL_CTL_DEL, clientfd, nullptr);
+                        std::cout << "客户但断开关闭连接:" << clientfd << std::endl;
+                        break; // 退出循环
+                    }
+                    else if (epoll_ret == -1 && errno == EAGAIN)
+                    {
+                        // 暂时没有更多数据可读，退出循环等待下一次 EPOLLIN 事件
+                        break;
+                    }
+                    else
+                    {
+                        // 处理接收错误
+                        perror("recv");
+                        close(clientfd);
+                        epoll_ctl(epfd, EPOLL_CTL_DEL, clientfd, nullptr);
+                        break; // 退出循环
+                    }
+                }
 
-                    printf("recv: %s, n: %d\n", epoll_buffer, epoll_ret);
-                    std::string httpRequest(reinterpret_cast<char *>(epoll_buffer), epoll_ret);
+                if (!httpRequest.empty())
+                {
                     epoll_httpResponse = handleHttpRequest(httpRequest);
 
                     ev.events = EPOLLOUT;
                     ev.data.fd = clientfd;
                     epoll_ctl(epfd, EPOLL_CTL_MOD, clientfd, &ev);
-                }
-                else if (epoll_ret == 0)
-                {
-                    close(clientfd);
-                    epoll_ctl(epfd, EPOLL_CTL_DEL, clientfd, nullptr);
-                    std::cout << "关闭连接:" << clientfd << std::endl;
                 }
             }
             else if (events[i].events & EPOLLOUT)
@@ -438,8 +470,6 @@ int main(int argc, char *argv[])
                     totalSent += epoll_ret;
                 }
 
-                ev.events = EPOLLIN;
-                ev.data.fd = clientfd;
                 // 因为是Http所以处理完数据后关闭连接
                 close(clientfd);
                 epoll_ctl(epfd, EPOLL_CTL_DEL, clientfd, nullptr);
@@ -447,6 +477,7 @@ int main(int argc, char *argv[])
             }
         }
     }
+#endif
 #endif
     return 0;
 }

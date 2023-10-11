@@ -1,5 +1,4 @@
 #include "toolFun.h"
-#include "Chatgpt.h"
 
 CChatgpt g_Chatgpt;
 
