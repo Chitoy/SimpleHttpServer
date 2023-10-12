@@ -12,7 +12,7 @@
 #include <sys/epoll.h>
 
 #include "toolFun.h"
-#include "EpollServer.h"
+#include "HttpServer.h"
 
 #define Demo 0
 #define SELECT 0
@@ -24,6 +24,9 @@
 #else
 #define BUFFER_LENGTH 8196
 #endif
+
+// struct timeval tv_begin;
+// gettimeofday(&tv_begin, NULL);
 
 // 函数声明
 std::string generateHttpResponse(const std::string &httpRequest)
@@ -216,8 +219,8 @@ void routine(void *arg)
 int main(int argc, char *argv[])
 {
 #if USE_SERVER
-    CEpollServer server;
-    server.InitServer();
+    CHttpServer server;
+    server.InitServer(1, 80);
     server.RunServer();
 #else
     // 创建socket

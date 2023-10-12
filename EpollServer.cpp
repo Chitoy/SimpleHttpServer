@@ -1,14 +1,6 @@
 #include "EpollServer.h"
-#include "toolFun.h"
-
-extern constexpr auto HTTP_404_ERROR = "HTTP/1.1 404 Not Found\r\n\r\nFile not found";
-extern CChatgpt g_Chatgpt;
 
 #define MAX_EPOLL_CLIENTFD 1024
-#define PORT_COUNT 1
-#define SERVER_PORT 80
-
-int g_sockfds[PORT_COUNT] = {0};
 
 CEpollServer::CEpollServer()
 {
@@ -53,15 +45,16 @@ int CEpollServer::RunServer()
     }
 }
 
-int CEpollServer::InitServer()
+int CEpollServer::InitServer(int nArrySize, short sPort)
 {
-    m_pEpfd = new CEpfd;
+    m_ArrySockfds = new int[nArrySize];
 
+    m_pEpfd = new CEpfd;
     CEpfd *pEpfd = m_pEpfd;
     InitEpfd(pEpfd);
-    unsigned short port = SERVER_PORT;
+    unsigned short port = sPort;
 
-    for (size_t sockCnt = 0; sockCnt < PORT_COUNT; sockCnt++)
+    for (size_t sockCnt = 0; sockCnt < nArrySize; sockCnt++)
     {
         // 监听端口的fd
         int lsfd = InitSocket(port + sockCnt);
@@ -70,9 +63,9 @@ int CEpollServer::InitServer()
             std::cout << "初始化监听端口失败" << std::endl;
             exit(0);
         }
-        g_sockfds[sockCnt] = lsfd;
+        m_ArrySockfds[sockCnt] = lsfd;
         // 监听端口socket绑定到epoll
-        Addlistener(pEpfd, g_sockfds[sockCnt], std::bind(&CEpollServer::ClientfdAccept, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
+        Addlistener(pEpfd, m_ArrySockfds[sockCnt], std::bind(&CEpollServer::ClientfdAccept, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
     }
     return 0;
 }
@@ -260,7 +253,6 @@ int CEpollServer::InitSocket(short port)
         return -1;
     }
     std::cout << "监听服务端口：" << port << std::endl;
-    gettimeofday(&tv_begin, NULL);
     return listenfd;
 }
 
@@ -304,21 +296,9 @@ int CEpollServer::ClientfdAccept(int fd, int events, void *arg)
 
     //  添加fd到epfd
     AddEventClientfd(pEpfd->epfd, EPOLLIN | EPOLLET, structClientfd);
-    // nty_event_add(reactor->epfd, EPOLLIN, event);
 
-    // //建立1000个连接耗时
-    // if (curfds++ % 1000 == 999) {
-    // 	struct timeval tv_cur;
-    // 	memcpy(&tv_cur, &tv_begin, sizeof(struct timeval));
-
-    // 	gettimeofday(&tv_begin, NULL);
-
-    // 	int time_used = TIME_SUB_MS(tv_begin, tv_cur);
-    // 	printf("connections: %d, sockfd:%d, time_used:%d\n", curfds, clientfd, time_used);
-    // }
-
-    // printf("new connect [%s:%d], pos[%d]\n",
-    //	inet_ntoa(client_addr.sin_addr), ntohs(client_addr.sin_port), clientfd);
+    std::cout << "新建连接：[ip=" << inet_ntoa(client_addr.sin_addr) << ":port=" << ntohs(client_addr.sin_port) << "]"
+              << "socket:" << clientfd << std::endl;
 
     return 0;
 }
@@ -363,10 +343,8 @@ int CEpollServer::ClientfdRecv(int fd, int events, void *arg)
     }
 
     // 解析请求数据
-    structClientfd->strRequest=strRequest;
-    //std::cout << "接收到的数据：" << structClientfd->strRequest << std::endl;
-    //structClientfd->strResponse = structClientfd->strRequest;
-    structClientfd->strResponse = handleHttpRequest(structClientfd->strRequest);
+    structClientfd->strRequest = strRequest;
+    structClientfd->strResponse = handleRequest(structClientfd->strRequest);
 
     // 更改回调函数为send
     SetClientfd(structClientfd, fd, std::bind(&CEpollServer::ClientfdSend, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3), pEpfd);
@@ -414,11 +392,14 @@ int CEpollServer::ClientfdSend(int fd, int events, void *arg)
         totalSent += len;
     }
 
-    //std::cout << "发送的数据：" << structClientfd->strResponse << std::endl;
     // 因为是Http所以处理完数据后关闭连接
-    DelEventClientfd(pEpfd->epfd, structClientfd);
-    close(fd);
-    std::cout << "数据发送完毕，关闭连接:" << fd << std::endl;
+    if (bCloseAfterSend())
+    {
+        DelEventClientfd(pEpfd->epfd, structClientfd);
+        close(fd);
+        std::cout << "数据发送完毕，关闭连接:" << fd << std::endl;
+    }
+
     return 0;
 }
 
@@ -456,83 +437,12 @@ int CEpollServer::ClearEpfd(CEpfd *pEpfd)
         blk = blk_next;
     }
 
-    for (int i = 0; i < PORT_COUNT; i++)
+    for (int i = 0; i < sizeof(m_ArrySockfds); i++)
     {
-        close(g_sockfds[i]);
+        close(m_ArrySockfds[i]);
     }
     delete m_pEpfd;
+    delete m_ArrySockfds;
 
     return 0;
-}
-
-std::string CEpollServer::handleHttpRequest(const std::string &httpRequest)
-{
-    std::ostringstream response;
-    response << "HTTP/1.1 200 OK\r\n";
-
-    std::string strSrc = analysisHttp(httpRequest);
-    if (strSrc == "/")
-    {
-        std::ifstream file("/home/Pys/Cpp/SeverHttp/build/src/Homepage.html");
-        if (!file.is_open())
-        {
-            return HTTP_404_ERROR;
-        }
-        response << "Content-Type: text/html\r\n";
-        SerilizHttpReponseEnd(response, file);
-        return response.str();
-    }
-    else if (strSrc.find(".html") != std::string::npos)
-    {
-        std::string strHtml = "src" + strSrc;
-        std::ifstream file(strHtml);
-        if (!file.is_open())
-        {
-            return HTTP_404_ERROR;
-        }
-        response << "Content-Type: text/html\r\n";
-        SerilizHttpReponseEnd(response, file);
-        return response.str();
-    }
-    else if ((strSrc.find(".png") != std::string::npos) ||
-             (strSrc.find(".jpg") != std::string::npos) ||
-             (strSrc.find(".ico") != std::string::npos))
-    {
-        std::string strHtml = "src" + strSrc;
-        std::ifstream file(strHtml);
-        if (!file.is_open())
-        {
-            return HTTP_404_ERROR;
-        }
-        response << "Content-Type: image/png\r\n";
-        SerilizHttpReponseEnd(response, file);
-        return response.str();
-    }
-    else if (strSrc.find(".mp4") != std::string::npos)
-    {
-        std::string strHtml = "src" + strSrc;
-        std::ifstream file(strHtml);
-        if (!file.is_open())
-        {
-            return HTTP_404_ERROR;
-        }
-        response << "Content-Type: video/mp4\r\n";
-        SerilizHttpReponseEnd(response, file);
-        return response.str();
-    }
-    else if (strSrc.find("search") != std::string::npos)
-    {
-        std::string strQues = urlDecode(extractSearchString(strSrc));
-        std::string strChatgpt = g_Chatgpt.SearchChatgpt(strQues);
-        response << "Content-Type: text/html\r\n";
-        response << "Content-Length: " + std::to_string(strChatgpt.length()) + "\r\n";
-        response << "\r\n";
-        response << strChatgpt;
-        return response.str();
-    }
-    else
-    {
-        // 处理其他路径的HTTP请求，可以根据需要添加更多逻辑
-        return HTTP_404_ERROR;
-    }
 }

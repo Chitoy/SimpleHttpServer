@@ -18,6 +18,8 @@ SET(SRC_FILES main.cpp
     Chatgpt.cpp
     EpollServer.h
     EpollServer.cpp
+    HttpServer.h
+    HttpServer.cpp
     )
 
 #target_include_directories(HttpServer PRIVATE ${CMAKE_SOURCE_DIR})

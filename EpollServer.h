@@ -2,6 +2,7 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <netinet/in.h>
+#include <arpa/inet.h>
 #include <fcntl.h>
 #include <fstream>
 #include <sstream>
@@ -24,7 +25,6 @@ typedef struct CClientfd
     int fd;
     int events;
     void *arg;
-    // int (*callback)(int fd, int events, void *arg); // 该fd的回调函数
     CLIENTCALLBACK callback;
 
     int status; // 是否受epfd管理，默认值为0----不受管理 ，1----受fd管理
@@ -75,7 +75,7 @@ public:
     ~CEpollServer();
 
     // 初始化服务器,后续可改为指定端口和端口号
-    int InitServer();
+    int InitServer(int nArrySize, short sPort);
     // Epoll_Wait封装
     int RunServer();
 
@@ -106,9 +106,13 @@ protected:
     int Addlistener(CEpfd *pEpfd, int sockfd, CLIENTCALLBACK acceptor);
 
     // 处理http请求
-    std::string handleHttpRequest(const std::string &httpRequest);
+    virtual std::string handleRequest(const std::string &httpRequest) = 0;
+    // 判断发送完数据后是否断开连接，主要用于区分长连接和短连接，默认是发送完数据断开
+    //返回true是短连接，例如是Http服务器要返回true，返回flase是长连接如websocket
+    virtual bool bCloseAfterSend() = 0;
 
 private:
     CEpfd *m_pEpfd = nullptr;
-    struct timeval tv_begin;
+    // 端口数组
+    int *m_ArrySockfds = nullptr;
 };
