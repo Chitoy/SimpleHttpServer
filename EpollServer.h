@@ -76,6 +76,8 @@ public:
     ~CEpollServer();
 
     // 初始化服务器,后续可改为指定端口和端口号
+    //参数nArrySize端口的个数，sPort是第一个端口号，后继端口累加
+    //例如InitServer(2, 2000);则监听2个端口分别是2000和2001
     int InitServer(int nArrySize, short sPort);
     // Epoll_Wait封装
     int RunServer();

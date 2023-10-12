@@ -28,5 +28,10 @@
   "directory": "/home/Pys/Cpp/SeverHttp/build",
   "command": "/usr/bin/g++   -I/usr/include/x86_64-linux-gnu -I/home/Pys/Cpp/SeverHttp/json/include  -g   -std=gnu++17 -o CMakeFiles/HttpServer.dir/HttpServer.cpp.o -c /home/Pys/Cpp/SeverHttp/HttpServer.cpp",
   "file": "/home/Pys/Cpp/SeverHttp/HttpServer.cpp"
+},
+{
+  "directory": "/home/Pys/Cpp/SeverHttp/build",
+  "command": "/usr/bin/g++   -I/usr/include/x86_64-linux-gnu -I/home/Pys/Cpp/SeverHttp/json/include  -g   -std=gnu++17 -o CMakeFiles/HttpServer.dir/SqlliteBase.cpp.o -c /home/Pys/Cpp/SeverHttp/SqlliteBase.cpp",
+  "file": "/home/Pys/Cpp/SeverHttp/SqlliteBase.cpp"
 }
 ]
