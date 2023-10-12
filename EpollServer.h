@@ -47,6 +47,7 @@ typedef struct CClientfd
 typedef struct CfdBlock
 {
     struct CfdBlock *next;
+    //指向一块连续内存
     CClientfd *clientfd;
 } CfdBlock;
 
