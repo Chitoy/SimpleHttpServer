@@ -23,8 +23,8 @@ SET(SRC_FILES main.cpp
     EpollServer.cpp
     HttpServer.h
     HttpServer.cpp
-    SqlliteBase.h
-    SqlliteBase.cpp
+    SqliteBase.h
+    SqliteBase.cpp
     )
 
 #target_include_directories(HttpServer PRIVATE ${CMAKE_SOURCE_DIR})

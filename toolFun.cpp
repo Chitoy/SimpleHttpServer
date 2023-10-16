@@ -4,19 +4,27 @@ CChatgpt g_Chatgpt;
 
 constexpr auto HTTP_404_ERROR = "HTTP/1.1 404 Not Found\r\n\r\nFile not found";
 
-//将url字符串解码
-std::string urlDecode(const std::string &input) {
+// 将url字符串解码
+std::string urlDecode(const std::string &input)
+{
     std::ostringstream decoded;
-    for (std::string::size_type i = 0; i < input.length(); ++i) {
-        if (input[i] == '%') {
-            if (i + 2 < input.length()) {
+    for (std::string::size_type i = 0; i < input.length(); ++i)
+    {
+        if (input[i] == '%')
+        {
+            if (i + 2 < input.length())
+            {
                 char decodedChar = std::stoi(input.substr(i + 1, 2), nullptr, 16);
                 decoded << decodedChar;
                 i += 2;
             }
-        } else if (input[i] == '+') {
+        }
+        else if (input[i] == '+')
+        {
             decoded << ' ';
-        } else {
+        }
+        else
+        {
             decoded << input[i];
         }
     }
@@ -154,5 +162,54 @@ std::string handleHttpRequest(const std::string &httpRequest)
     {
         // 处理其他路径的HTTP请求，可以根据需要添加更多逻辑
         return HTTP_404_ERROR;
+    }
+}
+
+void routine(void *arg)
+{
+
+    int clientfd = *(int *)arg;
+
+    while (1)
+    {
+
+        int nBufferLength = 8196;
+        unsigned char buffer[nBufferLength] = {0};
+        int ret = recv(clientfd, buffer, nBufferLength, 0);
+        if (ret == 0)
+        {
+            close(clientfd);
+            break;
+        }
+        printf("buffer : %s, ret: %d\n", buffer, ret);
+
+        std::string httpRequest(reinterpret_cast<char *>(buffer), ret);
+        std::string httpResponse = handleHttpRequest(httpRequest);
+        //  ret = send(clientfd, httpResponse.c_str(), httpResponse.length(), 0);
+
+        int totalSent = 0;
+        int dataLength = httpRequest.length();
+        while (totalSent < dataLength)
+        {
+            ret = send(clientfd, httpRequest.c_str() + totalSent, dataLength - totalSent, 0);
+            if (ret == -1)
+            {
+                if (errno == EAGAIN || errno == EWOULDBLOCK)
+                {
+                    // 资源暂时不可用，稍后重试
+                    continue;
+                }
+                else
+                {
+                    // 发生其他错误，需要处理错误并退出循环
+                    perror("send");
+                    break;
+                }
+            }
+            totalSent += ret;
+        }
+
+        // close(clientfd);
+        // break;
     }
 }

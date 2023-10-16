@@ -1,16 +1,3 @@
-#include <iostream>
-#include <sys/socket.h>
-#include <sys/types.h>
-#include <netinet/in.h>
-#include <fcntl.h>
-#include <fstream>
-#include <sstream>
-#include <unistd.h>
-#include <string>
-#include <cstring>
-#include <thread>
-#include <sys/epoll.h>
-
 #include "toolFun.h"
 #include "HttpServer.h"
 
@@ -20,208 +7,13 @@
 #define IO_USING 0
 #define USE_SERVER 1
 
-#if USE_SERVER
-#else
-#define BUFFER_LENGTH 8196
-#endif
-
-// struct timeval tv_begin;
-// gettimeofday(&tv_begin, NULL);
-
-// 函数声明
-std::string generateHttpResponse(const std::string &httpRequest)
-{
-    // 输出解析的http请求
-
-    if (httpRequest.find("GET / HTTP/1.1") != std::string::npos)
-    {
-        // 处理根路径的HTTP请求
-        std::ifstream file("/home/Pys/Cpp/SeverHttp/build/src/Homepage.html");
-        if (!file.is_open())
-        {
-            return "HTTP/1.1 404 Not Found\r\n\r\nFile not found";
-        }
-
-        std::ostringstream response;
-        response << "HTTP/1.1 200 OK\r\n";
-        response << "Content-Type: text/html\r\n";
-
-        // 获取文件大小
-        file.seekg(0, std::ios::end);
-        int fileSize = file.tellg();
-        file.seekg(0, std::ios::beg);
-        response << "Content-Length: " + std::to_string(fileSize) + "\r\n";
-
-        response << "\r\n";
-        response << file.rdbuf();
-
-        file.close();
-        return response.str();
-    }
-    else if (httpRequest.find("GET /Second.html HTTP/1.1") != std::string::npos)
-    {
-        // 处理 demo2.html 的HTTP请求
-        std::ifstream file("/home/Pys/Cpp/SeverHttp/build/src/Second.html");
-        if (!file.is_open())
-        {
-            return "HTTP/1.1 404 Not Found\r\n\r\nFile not found";
-        }
-
-        std::ostringstream response;
-        response << "HTTP/1.1 200 OK\r\n";
-        response << "Content-Type: text/html\r\n";
-
-        // 获取文件大小
-        file.seekg(0, std::ios::end);
-        int fileSize = file.tellg();
-        file.seekg(0, std::ios::beg);
-        response << "Content-Length: " + std::to_string(fileSize) + "\r\n";
-
-        response << "\r\n";
-        response << file.rdbuf();
-
-        file.close();
-        return response.str();
-    }
-    else if (httpRequest.find("GET /a.png HTTP/1.1") != std::string::npos)
-    {
-        // 处理图片的HTTP请求
-        std::ifstream imageFile("/home/Pys/Cpp/SeverHttp/build/src/a.png", std::ios::binary);
-        if (!imageFile.is_open())
-        {
-            return "HTTP/1.1 404 Not Found\r\n\r\nFile not found";
-        }
-
-        std::ostringstream response;
-        response << "HTTP/1.1 200 OK\r\n";
-        response << "Content-Type: image/png\r\n"; // 设置正确的Content-Type
-
-        // 获取文件大小
-        imageFile.seekg(0, std::ios::end);
-        int fileSize = imageFile.tellg();
-        imageFile.seekg(0, std::ios::beg);
-
-        response << "Content-Length: " + std::to_string(fileSize) + "\r\n";
-        response << "\r\n";
-
-        // 读取并发送图片数据
-        response << imageFile.rdbuf();
-        imageFile.close();
-        return response.str();
-    }
-    else if (httpRequest.find("GET /iphone.mp4 HTTP/1.1") != std::string::npos)
-    {
-        std::ifstream videoFile("/home/Pys/Cpp/SeverHttp/build/src/iphone.mp4", std::ios::binary);
-        if (!videoFile.is_open())
-        {
-            return "HTTP/1.1 404 Not Found\r\n\r\nFile not found";
-        }
-
-        std::ostringstream response;
-        response << "HTTP/1.1 200 OK\r\n";
-        response << "Content-Type: video/mp4\r\n";
-
-        // 获取文件大小
-        videoFile.seekg(0, std::ios::end);
-        int fileSize = videoFile.tellg();
-        videoFile.seekg(0, std::ios::beg);
-
-        response << "Content-Length: " + std::to_string(fileSize) + "\r\n";
-        response << "\r\n";
-
-        // 读取并发送视频数据
-        response << videoFile.rdbuf();
-
-        videoFile.close();
-        return response.str();
-    }
-    else if (httpRequest.find("GET /q.mp4 HTTP/1.1") != std::string::npos)
-    {
-        std::ifstream videoFile("/home/Pys/Cpp/SeverHttp/build/src/q.mp4", std::ios::binary);
-        if (!videoFile.is_open())
-        {
-            return "HTTP/1.1 404 Not Found\r\n\r\nFile not found";
-        }
-
-        std::ostringstream response;
-        response << "HTTP/1.1 200 OK\r\n";
-        response << "Content-Type: video/mp4\r\n";
-
-        // 获取文件大小
-        videoFile.seekg(0, std::ios::end);
-        int fileSize = videoFile.tellg();
-        videoFile.seekg(0, std::ios::beg);
-
-        response << "Content-Length: " + std::to_string(fileSize) + "\r\n";
-        response << "\r\n";
-
-        // 读取并发送视频数据
-        response << videoFile.rdbuf();
-
-        videoFile.close();
-        return response.str();
-    }
-    else
-    {
-        // 处理其他路径的HTTP请求，可以根据需要添加更多逻辑
-        return "HTTP/1.1 404 Not Found\r\n\r\nFile not found";
-    }
-}
-
-void routine(void *arg)
-{
-
-    int clientfd = *(int *)arg;
-
-    while (1)
-    {
-
-        unsigned char buffer[BUFFER_LENGTH] = {0};
-        int ret = recv(clientfd, buffer, BUFFER_LENGTH, 0);
-        if (ret == 0)
-        {
-            close(clientfd);
-            break;
-        }
-        printf("buffer : %s, ret: %d\n", buffer, ret);
-
-        std::string httpRequest(reinterpret_cast<char *>(buffer), ret);
-        // std::string httpResponse = generateHttpResponse(httpRequest);
-        //  ret = send(clientfd, httpResponse.c_str(), httpResponse.length(), 0);
-
-        int totalSent = 0;
-        int dataLength = httpRequest.length();
-        while (totalSent < dataLength)
-        {
-            ret = send(clientfd, httpRequest.c_str() + totalSent, dataLength - totalSent, 0);
-            if (ret == -1)
-            {
-                if (errno == EAGAIN || errno == EWOULDBLOCK)
-                {
-                    // 资源暂时不可用，稍后重试
-                    continue;
-                }
-                else
-                {
-                    // 发生其他错误，需要处理错误并退出循环
-                    perror("send");
-                    break;
-                }
-            }
-            totalSent += ret;
-        }
-
-        // close(clientfd);
-        // break;
-    }
-}
-
 int main(int argc, char *argv[])
 {
 #if USE_SERVER
     CHttpServer server;
     server.InitServer(1, 80);
     server.RunServer();
+
 #else
     // 创建socket
     int listenfd = socket(AF_INET, SOCK_STREAM, 0);
@@ -259,7 +51,7 @@ int main(int argc, char *argv[])
 #endif
 
 #if SELECT
-
+    int nBufferLength = 8196;
     int flags = fcntl(listenfd, F_GETFL, 0);
     fcntl(listenfd, F_SETFL, flags | O_NONBLOCK);
 
@@ -272,7 +64,7 @@ int main(int argc, char *argv[])
 
     int maxfd = listenfd;
 
-    unsigned char buffer[BUFFER_LENGTH] = {0};
+    unsigned char buffer[nBufferLength] = {0};
     int ret = 0;
 
     std::string httpResponse;
@@ -302,7 +94,7 @@ int main(int argc, char *argv[])
         {
             if (FD_ISSET(i, &rset))
             {
-                ret = recv(i, buffer, BUFFER_LENGTH, 0);
+                ret = recv(i, buffer, nBufferLength, 0);
                 if (ret == 0)
                 {
                     close(i);
@@ -313,7 +105,7 @@ int main(int argc, char *argv[])
                 {
                     printf("buffer : %s, ret: %d\n", buffer, ret);
                     std::string httpRequest(reinterpret_cast<char *>(buffer), ret);
-                    httpResponse = generateHttpResponse(httpRequest);
+                    httpResponse = handleHttpRequest(httpRequest);
                     std::cout << "收到请求：+++++++++++++++" << httpRequest << std::endl;
                     FD_SET(i, &wfds);
                 }
@@ -359,7 +151,9 @@ int main(int argc, char *argv[])
 
 #if EPOLL
 #define EVENTS_LENGTH 128
-    char epoll_buffer[BUFFER_LENGTH] = {0};
+
+    int nBufferLength = 8196;
+    char epoll_buffer[nBufferLength] = {0};
     int epoll_ret = 0;
     std::string epoll_httpResponse;
 
@@ -401,7 +195,7 @@ int main(int argc, char *argv[])
                 std::string httpRequest; // 用于累积完整的 HTTP 请求
                 while (true)
                 {
-                    epoll_ret = recv(clientfd, epoll_buffer, BUFFER_LENGTH, 0);
+                    epoll_ret = recv(clientfd, epoll_buffer, nBufferLength, 0);
                     if (epoll_ret > 0)
                     {
                         std::string receivedData(epoll_buffer, epoll_ret);
@@ -446,7 +240,7 @@ int main(int argc, char *argv[])
 
                 while (totalSent < dataLength)
                 {
-                    int bytesToSend = std::min(dataLength - totalSent, BUFFER_LENGTH); // 每次发送的数据大小
+                    int bytesToSend = std::min(dataLength - totalSent, nBufferLength); // 每次发送的数据大小
 
                     epoll_ret = send(clientfd, epoll_httpResponse.c_str() + totalSent, bytesToSend, MSG_NOSIGNAL);
                     if (epoll_ret == -1)
